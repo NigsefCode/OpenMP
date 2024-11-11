@@ -87,5 +87,9 @@ El Script de visualización genera dos gráficos
 1. Tiempo de ejecución vs Número de hilos
 2. Speedup vs Número de hilos
 
-Los gráficos se guardan automáticamente con un timestamp en el formato: `analisis_rendimiento_factorial_YYYYMMDD_HHMMSS.png`, como lo puede observar en la siguiente imagen ![alt text]()
+Los gráficos se guardan automáticamente con un timestamp en el formato: `analisis_rendimiento_factorial_YYYYMMDD_HHMMSS.png`, como lo puede observar en la siguiente imagen:
+
+![alt text](https://github.com/NigsefCode/OpenMP/blob/main/Ejercicio_1/analisis_rendimiento_factorial_20241111_155002.png?raw=true)
+
+#### Análisis de resultados
 
