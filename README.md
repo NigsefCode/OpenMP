@@ -92,4 +92,23 @@ Los gráficos se guardan automáticamente con un timestamp en el formato: `anali
 ![alt text](https://github.com/NigsefCode/OpenMP/blob/main/Ejercicio_1/analisis_rendimiento_factorial_20241111_155002.png?raw=true)
 
 #### Análisis de resultados
+Basados en el gráfico de ejemplo, se puede concluir que el tiempo de ejecución del programa se comporta de manera inesperada con los diferentes números de hilos (observable en el gráfico "Tiempo de Ejecución vs Número de Hilos"):
+1. Con la versión secuencial (sin hilos o línea roja punteada), el programa es muy rápido, tomando solo 0.000001 segundos.
+2. Al agregar hilos (línea azul continua con puntos), se puede ver que:
 
+    - Con 1 hilo: el tiempo aumenta a 0.000005 segundos
+    - Con 2 hilos: sube drásticamente a 0.00004 segundos
+    - Con 4 y 8 hilos: sigue aumentando gradualmente
+
+Esto se refleja también en el gráfico de "Speedup vs Número de Hilos", donde:
+
+- La línea roja punteada muestra el speedup ideal (lo que esperaríamos en un caso perfecto)
+- La línea verde con puntos muestra el speedup real, que está muy por debajo de lo ideal
+
+Este comportamiento muestra que agregar más hilos en realidad hace el programa más lento, no más rápido como esperaríamos. Lo que lleva a preguntarse, ¿por qué pasa esto?:
+1. Principalmente porque el problema (calcular factoriales hasta N=20) es demasiado pequeño
+2. El tiempo que toma crear y gestionar los hilos es mayor que el tiempo que toma hacer los cálculos
+
+Para mejorar esto se debería:
+1. Aumentar el valor de N significativamente
+2. Hacer cálculos más complejos que realmente justifiquen el uso de varios hilos
