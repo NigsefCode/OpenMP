@@ -201,3 +201,127 @@ int N_values[] = {100000, 1000000, 10000000}; // Tamaño del array
 int M_values[] = {100000, 1000000, 10000000}; // Número de iteraciones
 ```
 
+### Ejercicio 3: Suma Acumulativa de Números Flotantes usando Reducción
+Este ejemplo genera un arreglo de N números flotantes aleatorios entre 0 y 1. Paraleliza el cálculo de la suma de estos números usando OpenMP.
+
+#### Compilación y Ejecución
+1. **Compilar el Programa**
+   
+   Una vez activado el entorno virtual, debe dirigirse a la carpeta del ejercicio 3
+    ```bash
+      cd Ejercicio_3
+    ```
+
+   Luego, para compilar el programa, utilice el siguiente comando:
+    ```bash
+      gcc -fopenmp float_sum.c -o float_sum
+    ```
+2. **Ejecutar Programa**
+   
+   Ejecutar el archivo creado:
+    ```bash
+      ./float_sum
+    ```
+3. **Generar Gráficos de Rendimiento**
+   
+   Para evidenciar a través de gráficos los resultados, utilice el script de python, ya que importa al archivo **_float_sum_**
+    ```bash
+      python plot_reduction.py
+    ```
+
+#### Estructura de archivos
+- `float_sum.c`: Implementación de suma acumulativa con reducción
+- `plot_reduction.py`: Script para visualización de resultados
+
+#### Resultados
+
+**Resultados Detallados por Tamaño de Array**
+
+Al ejecturar **_float_sum_** entrega estos resultados:
+
+| Tamaño del Array | Hilos | Tiempo Secuencial (s) | Tiempo Paralelo (s) | Speedup |
+|------------------|-------|----------------------|-------------------|---------|
+| 1,000,000        | 2     | 0.002265            | 0.002410         | 0.94    |
+| 1,000,000        | 4     | 0.002265            | 0.002908         | 0.78    |
+| 1,000,000        | 8     | 0.002265            | 0.002981         | 0.76    |
+| 10,000,000       | 2     | 0.022355            | 0.022533         | 0.99    |
+| 10,000,000       | 4     | 0.022355            | 0.042176         | 0.53    |
+| 10,000,000       | 8     | 0.022355            | 0.048893         | 0.46    |
+| 100,000,000      | 2     | 0.253545            | 0.268584         | 0.94    |
+| 100,000,000      | 4     | 0.253545            | 0.251687         | 1.01    |
+| 100,000,000      | 8     | 0.253545            | 0.274796         | 0.92    |
+
+> **Nota**: Speedup = Tiempo Secuencial / Tiempo Paralelo.
+> Valores > 1 indican mejora de rendimiento.
+
+**Resumen de Resultados**
+
+Y luego al ejecutar **_python plot_reduction.py_** da un resumen:
+
+| Hilos | Tiempo Secuencial (s) | Tiempo Paralelo (s) |
+|-------|----------------------|-------------------|
+| 2     | 0.096306            | 0.088834         |
+| 4     | 0.096306            | 0.089156         |
+| 8     | 0.096306            | 0.095355         |
+
+A continuación se muestran los gráficos de ejemplo al ejecutar el programa:
+
+![image](https://github.com/NigsefCode/OpenMP/blob/main/Ejercicio_3/analisis_reduccion.png?raw=true)
+
+#### Análisis de Resultados
+
+1. **Impacto del Tamaño del Array**:
+
+   a) Arrays Pequeños (1M):
+   * El rendimiento en paralelo fue inferior al secuencial
+   * La eficiencia (speedup) disminuye a medida que se usan más hilos (0.94 a 0.76)
+   * El overhead de paralelización supera los beneficios
+
+   b) Arrays Medianos (10M):
+   * Con 2 hilos mantiene un rendimiento similar al secuencial (speedup 0.99)
+   * Con 4 y 8 hilos, el rendimiento cae considerablemente (speedup cae a 0.46)
+   * Aquí se observa que el tiempo extra de coordinación entre hilos es aún mayor
+
+   c) Arrays Grandes (100M):
+   * Único caso de mejora real con 4 hilos (speedup 1.01)
+   * Con 2 hilos, el rendimiento sigue siendo cercano al secuencial (0.94)
+   * Con 8 hilos, el rendimiento baja levemente (0.92), pero es mucho más estable
+
+2. **Escalabilidad**:
+   - Mejor escalabilidad en arrays grandes (100M)
+   - El mejor rendimiento se observa con 4 hilos en arrays grandes
+   - En todos los casos, el rendimiento disminuye cuando se utilizan 8 hilos
+
+3. **Eficiencia de la Paralelización**:
+   - La paralelización es efectiva solo para problemas grandes (100 M) y al usar 4 hilos
+   - En arrays pequeños, la paralelización es incluso contraproducente
+   - Balance óptimo entre overhead y beneficio en 100M y 4 hilos
+
+4. **Recomendaciones**:
+   - Usar paralelización solo para arrays grandes (>100M)
+   - Limitar el número de hilos a 4
+   - Evitar paralelización en arrays pequeños
+
+#### Explicación de cómo la Reducción Evita Condiciones de Carrera
+La reducción (`reduction(+:suma)`) previene condiciones de carrera a través de tres mecanismos clave:
+
+1. **Creación de Copias Privadas**:
+   - Cada hilo recibe una copia privada de la variable suma
+   - Cada hilo acumula su resultado parcial sin interferir con otros
+   - Evita conflicto con otros hilos
+
+2. **Proceso de Combinación de Resultados**:
+   - Al finalizar los cálculos parciales, OpenMP:
+     * Combina automáticamente todas las sumas individuales en una sola
+     * Realiza la combinación en un orden definido
+     * Garantiza que no se pierdan actualizaciones
+
+3. **Ventajas sobre una Sección Crítica**:
+    - No requiere bloqueos manuales
+    - Mejor rendimiento que `#pragma omp critical`
+    - Optimizado para operaciones de reducción
+
+4. **Beneficios Reflejados en Nuestros Resultados**:
+    - Los valores de suma obtenidos en paralelo son consistentes
+    - No hay pérdida de actualizaciones de datos
+    - Se mantiene la integridad y precisión de los datos
