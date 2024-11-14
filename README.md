@@ -42,6 +42,7 @@ Una vez corroborada la instalación de los requisitos previos, puede seguir los 
       python3 -m venv venv
       source venv/bin/activate
       pip install matplotlib numpy
+      pip install pandas
     ```
 
 ### Ejercicio 1: Cálculo de Factoriales en Paralelo
@@ -112,3 +113,91 @@ Este comportamiento muestra que agregar más hilos en realidad hace el programa 
 Para mejorar esto se debería:
 1. Aumentar el valor de N significativamente
 2. Hacer cálculos más complejos que realmente justifiquen el uso de varios hilos
+
+### Ejercicio 2: Simulación de Incrementos en Valores Aleatorios
+Este ejercico consisten en crear un arreglo de N números enteros inicializados en cero. Paraleliza el proceso en el cual cada hilo incrementa un valor aleatorio del arreglo en un bucle de M iteraciones.
+
+#### Compilación y Ejecución
+1. **Compilar el Programa**
+   
+   Una vez activado el entorno virtual, debe dirigirse a la carpeta del ejercicio 2
+    ```bash
+      cd Ejercicio_2
+    ```
+
+   Luego, para compilar el programa, utilice el siguiente comando:
+    ```bash
+      gcc -fopenmp random_increments.c -o random_increments
+    ```
+2. **Ejecutar Programa**
+   
+   Ejecutar el archivo creado:
+    ```bash
+      ./random_increments
+    ```
+3. **Generar Gráficos de Rendimiento**
+   
+   Para evidenciar a través de gráficos los resultados, utilice el script de python, ya que importa al archivo **_random_increments_**
+    ```bash
+      python plot_increments.py
+    ```
+
+#### Estructura de archivos
+- `random_increments.c`: Implementación del programa de incrementos aleatorios
+- `plot_increments.py`: Script para visualización de resultados
+
+#### Funcionalidades
+- Inicialización de array con números aleatorios
+- Implementación sin sincronización y con sección crítica
+- Medición de tiempos de ejecución y precisión
+- Comparación de rendimiento con diferentes números de hilos
+
+#### Resultados
+Como ejemplo en la ejecución del programa, al crear el gráfico, entrega este resumen para entender mejor los resultados:
+
+| N° Hilos | Tiempo Sin Sync (s) | Tiempo Con Sync (s) | Suma Sin Sync (% error) | Suma Con Sync (% error) |
+|-----------|-------------------|--------------------|----------------------|---------------------|
+| 1         | 0.0002           | 0.0005            | 0.0                  | 0.0                 |
+| 2         | 0.0004           | 0.0011            | 0.0                  | 0.0                 |
+| 4         | 0.0006           | 0.0024            | 0.0                  | 0.0                 |
+| 8         | 0.0020           | 0.0045            | 0.0                  | 0.0                 |
+
+A continuación se muestran los gráficos de ejemplo al ejecutar el programa:
+
+![image](https://github.com/user-attachments/assets/576faa02-ef67-492b-a973-5af5bcbc551b)
+
+#### Análisis de Resultados
+Las diferencias entre la versión con y sin sección crítica son notables:
+
+1. **Tiempos de Ejecución**
+   - **Sin Sincronización:** Más rápido en todos los casos,  lo que indica una reducción en el overhead de procesamiento
+   - **Con Sincronización:** Aproximadamente 2-4 veces más lento debido al overhead de la sección crítica. Este overhead es causado por el mecanismo de sincronización, que asegura el acceso controlado a los recursos compartidos, pero introduce un costo adicional en términos de rendimiento y tiempo
+
+2. **Precisión**
+   - Ambas versiones muestran 0% de error en estas pruebas específicas
+   - Este comportamiento sugiere que el tamaño de las pruebas podría ser insuficiente para evidenciar condiciones de carrera
+
+3. **Escalabilidad**
+   - La diferencia en tiempos se amplía al aumentar el número de hilos
+   - Con 8 hilos, la versión sincronizada es más del doble de lenta que la no sincronizada
+   - Al no observarse errores, es posible que el volumen de datos y la frecuencia de acceso a los recursos compartidos no hayan sido suficientes para ocasionar inconsistencias.
+
+#### Pruebas futuras
+En este caso particular, la sección crítica añade overhead sin beneficio aparente en la precisión. Esto podría deberse a que el tamaño de las pruebas es relativamente pequeño y las condiciones de carrera no fueron evidentes en estos datos específicos.
+
+Para obtener resultados más representativos, se recomienda aumentar significativamente los valores de N y M en las pruebas. En el archivo **_random_increments.c** se puede modificar la siguiente sección:
+
+```c
+// Valores originales
+int N_values[] = {1000, 10000, 100000};       // Tamaño del array
+int M_values[] = {1000, 10000, 100000};       // Número de iteraciones
+```
+
+Modificarlo a:
+
+```c
+// Nuevos valores de prueba
+int N_values[] = {100000, 1000000, 10000000}; // Tamaño del array
+int M_values[] = {100000, 1000000, 10000000}; // Número de iteraciones
+```
+
