@@ -325,3 +325,135 @@ La reducción (`reduction(+:suma)`) previene condiciones de carrera a través de
     - Los valores de suma obtenidos en paralelo son consistentes
     - No hay pérdida de actualizaciones de datos
     - Se mantiene la integridad y precisión de los datos
+
+
+### Ejercicio 4: Multiplicación de Matrices con Paralelización por Filas
+Este ejemplo se implementa la multiplicación de dos matrices cuadradas de NxN.
+
+#### Compilación y Ejecución
+1. **Compilar el Programa**
+   
+   Una vez activado el entorno virtual, debe dirigirse a la carpeta del ejercicio 4
+    ```bash
+      cd Ejercicio_4
+    ```
+
+   Luego, para compilar el programa, utilice el siguiente comando:
+    ```bash
+      gcc -fopenmp matrix_mult.c -o matrix_mult
+    ```
+2. **Ejecutar Programa**
+   
+   Ejecutar el archivo creado:
+    ```bash
+      ./matrix_mult
+    ```
+3. **Generar Gráficos de Rendimiento**
+   
+   Para evidenciar a través de gráficos los resultados, utilice el script de python, ya que importa al archivo **_matrix_mult_**
+    ```bash
+      python plot_matrix.py
+    ```
+#### Estructura de archivos
+- `matrix_mult.c`: Implementación de la multiplicación de matrices
+- `python plot_matrix.py`: Script para visualización de resultados
+
+#### Resultados
+
+**Resultados Detallados por Tamaño de Array**
+
+Al ejecturar **_matrix_mult_** entrega estos resultados:
+
+| Tamaño | Hilos | Tiempo Secuencial (s) | Tiempo Paralelo (s) | Speedup |
+|--------|-------|----------------------|-------------------|---------|
+| 100    | 2     | 0.003034            | 0.008263         | 0.37    |
+| 100    | 4     | 0.003034            | 0.003474         | 0.87    |
+| 100    | 8     | 0.003034            | 0.003889         | 0.78    |
+| 500    | 2     | 0.618824            | 0.672384         | 0.92    |
+| 500    | 4     | 0.618824            | 0.710492         | 0.87    |
+| 500    | 8     | 0.618824            | 0.632947         | 0.98    |
+| 1000   | 2     | 10.281138           | 10.098008        | 1.02    |
+| 1000   | 4     | 10.281138           | 10.262693        | 1.00    |
+| 1000   | 8     | 10.281138           | 10.199403        | 1.01    |
+
+Y luego al ejecutar **_python plot_matrix.py_** da un resumen:
+
+| Hilos | Tiempo Secuencial (s) | Tiempo Paralelo (s) |
+|-------|----------------------|-------------------|
+| 2     | 3.919147            | 3.992622         |
+| 4     | 3.919147            | 3.845377         |
+| 8     | 3.919147            | 4.086769         |
+
+> **Nota**: Speedup = Tiempo Secuencial / Tiempo Paralelo. Valores > 1 indican mejora de rendimiento.
+
+A continuación se muestran los gráficos de ejemplo al ejecutar el programa:
+
+
+
+#### Análisis del Impacto del Tamaño de Matriz y Número de Hilos
+
+1. **Por Tamaño de Matriz**:
+
+    a) **Matrices Pequeñas (N=100)**:
+
+     * Secuencial: 0.003034 segundos
+       * El rendimiento paralelo varía:
+           - 2 hilos: Más lento (0.008263s)
+           - 4 hilos: Ligero incremento (0.003474s)
+           - 8 hilos: Degradación moderada (0.003889s)
+       * La paralelización no es beneficiosa debido al overhead
+  
+    b) **Matrices Medianas (N=500)**:
+
+     * Secuencial: 0.618824 segundos
+       * Comportamiento paralelo:
+           - 2 hilos: 8% más lento
+           - 4 hilos: 15% más lento
+           - 8 hilos: Solo 2% más lento
+       * El overhead sigue superando los beneficios
+    
+    c) **Matrices Grandes (N=1000)**:
+
+     * Secuencial: 10.281138 segundos
+       * Rendimiento paralelo:
+           - 2 hilos: Ligera mejora (10.098008s)
+           - 4 y 8 hilos: Similar al secuencial
+       * Mejores resultados con matrices grandes
+
+3. **Impacto del Número de Hilos**:
+
+    a) **2 Hilos**:
+
+   * Peor en matrices pequeñas
+   * Mejor rendimiento en matrices grandes
+   * Menos overhead de sincronización
+    
+    b) **4 Hilos**:
+
+   * Rendimiento variable
+   * Mejor en matrices pequeñas que 2 hilos
+   * Similar al secuencial en matrices grandes
+  
+    c) **8 Hilos**:
+
+   * No muestra beneficios significativos
+   * Mayor overhead de sincronización
+   * Rendimiento inconsistente
+    
+5. **Conclusiones**:
+    
+    a) El tamaño de la matriz es crítico:
+
+   * Matrices pequeñas: La paralelización es contraproducente
+   * Matrices grandes: Beneficios modestos con 2 hilos
+    
+    b) El número de hilos afecta inversamente al rendimiento:
+
+   * Más hilos no significa mejor rendimiento
+   * El overhead aumenta con el número de hilos
+   * Punto óptimo parece estar en 2 hilos para matrices grandes
+
+7. **Recomendaciones**:
+   - Usar paralelización solo para matrices grandes (N>1000)
+   - Limitar el número de hilos a 2-4
+   - Considerar otros enfoques de paralelización para matrices más pequeñas
