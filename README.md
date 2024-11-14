@@ -303,7 +303,7 @@ A continuación se muestran los gráficos de ejemplo al ejecutar el programa:
    - Evitar paralelización en arrays pequeños
 
 #### Explicación de cómo la Reducción Evita Condiciones de Carrera
-La reducción (`reduction(+:suma)`) previene condiciones de carrera a través de tres mecanismos clave:
+La reducción (`reduction(+:suma)`) previene condiciones de carrera a través de estos mecanismos clave:
 
 1. **Creación de Copias Privadas**:
    - Cada hilo recibe una copia privada de la variable suma
