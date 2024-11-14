@@ -164,7 +164,7 @@ Como ejemplo en la ejecución del programa, al crear el gráfico, entrega este r
 
 A continuación se muestran los gráficos de ejemplo al ejecutar el programa:
 
-![image](https://github.com/user-attachments/assets/576faa02-ef67-492b-a973-5af5bcbc551b)
+![alt text](https://github.com/user-attachments/assets/576faa02-ef67-492b-a973-5af5bcbc551b)
 
 #### Análisis de Resultados
 Las diferencias entre la versión con y sin sección crítica son notables:
@@ -266,7 +266,7 @@ Y luego al ejecutar **_python plot_reduction.py_** da un resumen:
 
 A continuación se muestran los gráficos de ejemplo al ejecutar el programa:
 
-![image](https://github.com/NigsefCode/OpenMP/blob/main/Ejercicio_3/analisis_reduccion.png?raw=true)
+![alt text](https://github.com/NigsefCode/OpenMP/blob/main/Ejercicio_3/analisis_reduccion.png?raw=true)
 
 #### Análisis de Resultados
 
@@ -388,7 +388,7 @@ Y luego al ejecutar **_python plot_matrix.py_** da un resumen:
 
 A continuación se muestran los gráficos de ejemplo al ejecutar el programa:
 
-
+![alt text](https://github.com/NigsefCode/OpenMP/blob/main/Ejercicio_4/analisis_matrices.png?raw=true)
 
 #### Análisis del Impacto del Tamaño de Matriz y Número de Hilos
 
